@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "forwardable"
+
 class Literal::Array
 	class Generic
 		include Literal::Type
@@ -35,6 +37,7 @@ class Literal::Array
 	end
 
 	include Enumerable
+	extend Forwardable
 
 	def initialize(value, type:)
 		collection_type = Literal::Types::ArrayType.new(type)
@@ -65,6 +68,26 @@ class Literal::Array
 	end
 
 	attr_reader :__type__, :__value__
+
+	def_delegators :@__value__,
+		:all?,
+		:any?,
+		:at,
+		:bsearch,
+		:clear,
+		:count,
+		:each,
+		:empty?,
+		:filter!,
+		:first,
+		:last,
+		:length,
+		:one?,
+		:pop,
+		:sample,
+		:shift,
+		:size,
+		:sort!
 
 	def &(other)
 		case other
@@ -98,63 +121,13 @@ class Literal::Array
 		@__value__[index] = value
 	end
 
-	def all?(...)
-		@__value__.all?(...)
-	end
-
-	def any?(...)
-		@__value__.any?(...)
-	end
-
-	def at(...)
-		@__value__.at(...)
-	end
-
-	def bsearch(...)
-		@__value__.bsearch(...)
-	end
-
-	def clear(...)
-		@__value__.clear(...)
-		self
-	end
-
-	def count(...)
-		@__value__.count(...)
-	end
-
-	def each(...)
-		@__value__.each(...)
-	end
-
-	def empty?
-		@__value__.empty?
-	end
-
 	def filter(...)
 		__with__(@__value__.filter(...))
-	end
-
-	def filter!(...)
-		@__value__.filter!(...)
-		self
-	end
-
-	def first(...)
-		@__value__.first(...)
 	end
 
 	def freeze
 		@__value__.freeze
 		super
-	end
-
-	def last(...)
-		@__value__.last(...)
-	end
-
-	def length(...)
-		@__value__.length(...)
 	end
 
 	def map(type, &block)
@@ -192,14 +165,6 @@ class Literal::Array
 		__with__(@__value__.minmax(...))
 	end
 
-	def one?(...)
-		@__value__.one?(...)
-	end
-
-	def pop(...)
-		@__value__.pop(...)
-	end
-
 	def push(*value)
 		Literal.check(actual: value, expected: @__collection_type__) do |c|
 			c.fill_receiver(receiver: self, method: "#push")
@@ -220,25 +185,8 @@ class Literal::Array
 		self
 	end
 
-	def sample(...)
-		@__value__.sample(...)
-	end
-
-	def shift(...)
-		@__value__.shift(...)
-	end
-
-	def size(...)
-		@__value__.size(...)
-	end
-
 	def sort(...)
 		__with__(@__value__.sort(...))
-	end
-
-	def sort!(...)
-		@__value__.sort!(...)
-		self
 	end
 
 	def to_a
